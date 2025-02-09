@@ -1,72 +1,79 @@
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
+import java.awt.Color;
+import java.awt.Graphics;
 import javax.swing.JPanel;
+import java.util.Random;
 
+// Rectangle class
 public class Rectangle {
-
     private JPanel panel;
-    private int x;
-    private int y;
-    private int width;
-    private int height;
-    boolean alive = true;
+    private int x, y;
+    private int width = 40, height = 20;
+    private boolean alive = true;
+    private java.awt.Rectangle rectangle;
+    private int speed = 5;
 
-    private int dx;
-    private int dy;
-
-    private Rectangle2D.Double rectangle;
-
-    public Rectangle(JPanel p, int xPos, int yPos){
+    public Rectangle(JPanel p, int xPos, int yPos) {
         panel = p;
         x = xPos;
-        y = 0;  
-        dx = 2;  
-        dy = 10; 
-
-        width = 30;
-        height = 20;
+        y = yPos;
+        rectangle = new java.awt.Rectangle(x, y, width, height);
     }
 
-    public void draw() {
-        Graphics g = panel.getGraphics();
-        Graphics2D g2 = (Graphics2D) g;
-
-        rectangle = new Rectangle2D.Double(x, y, width, height);
-        g2.setColor(Color.GREEN);
-        g2.fill(rectangle);
-
-        g.dispose();
+    public void draw(Graphics g) {
+        if (alive) {
+            g.setColor(Color.GREEN);
+            g.fillRect(x, y, width, height);
+        }
     }
 
-    public void erase() {
-        Graphics g = panel.getGraphics();
-        Graphics2D g2 = (Graphics2D) g;
-
-        g2.setColor(panel.getBackground());
-        g2.fill(new Rectangle2D.Double(x, y, width, height));
-
-        g.dispose();
+    public void erase(Graphics g) {
+        if (alive) {
+            g.setColor(panel.getBackground());
+            g.fillRect(x, y, width, height);
+        }
     }
 
     public void move() {
-        x -= dx;  
-
-        if (x + width < 0 || x > panel.getWidth()) {
-            dx = -dx;  
-            y += dy;   
+        x += speed;
+        if (x > panel.getWidth()) {
+            x = 0;
+            y += height; 
+            if (y > panel.getHeight()) {
+                y = 0;
+            }
         }
-
-        if (y >= panel.getHeight() - height) {
-            y = panel.getHeight() - height;  
-        }
+        rectangle.setLocation(x, y);
     }
 
-    public void update() {
-        erase();  
-        move();  
-        draw();  
+    public void destroy() {
+        alive = false;
+        System.out.println("Rectangle destroyed!");
+    }
+
+    public boolean checkCollision(Bullet bullet) {
+        if (!alive) return false;
+        java.awt.Rectangle bulletRect = new java.awt.Rectangle(bullet.getX(), bullet.getY(), bullet.getSize(), bullet.getSize());
+        return rectangle.intersects(bulletRect);
+    }
+
+    public boolean checkCollision(int shipX, int shipY, int shipWidth, int shipHeight) {
+        if (!alive) return false;
+        java.awt.Rectangle shipRect = new java.awt.Rectangle(shipX, shipY, shipWidth, shipHeight);
+        return rectangle.intersects(shipRect);
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public int getY() {
+        return y;
     }
 }
+
+
+
+
 
 
 

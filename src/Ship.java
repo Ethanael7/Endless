@@ -8,7 +8,7 @@ import java.util.*;
 import javax.swing.Timer;
 
 
-public class Box {
+public class Ship {
 
     private JPanel panel;
     private int x;
@@ -21,7 +21,7 @@ public class Box {
     
 
 
-    public Box(JPanel p, int xPos, int yPos) {
+    public Ship(JPanel p, int xPos, int yPos) {
         panel = p;
         backgroundColour = panel.getBackground();
         x = xPos;
@@ -85,6 +85,13 @@ public class Box {
             y = Math.max(y - dy, 0);
         }
     }
+
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+        draw();
+    }
+
 }
 
 

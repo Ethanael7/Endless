@@ -10,7 +10,7 @@ public class Bullet {
         this.x = x;
         this.y = y;
         this.size = size;
-        this.speed = 5;  // Default speed
+        this.speed = 5;  
         this.color = Color.BLACK;
     }
 
