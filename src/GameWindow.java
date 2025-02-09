@@ -32,12 +32,13 @@ public class GameWindow extends JFrame
 
 	private JPanel mainPanel;
 	private GamePanel gamePanel;
+	private Timer obstacleTimer;
 
 	@SuppressWarnings({"unchecked"})
 	public GameWindow() {
  
-		setTitle ("A Game with a Bat and an Alien");
-		setSize (500, 550);
+		setTitle ("Shape Invaders");
+		setSize (600, 650);
 
 		// create user interface objects
 
@@ -57,13 +58,13 @@ public class GameWindow extends JFrame
 		keyTF.setEditable(false);
 		mouseTF.setEditable(false);
 
-		statusBarTF.setBackground(Color.CYAN);
-		keyTF.setBackground(Color.YELLOW);
-		mouseTF.setBackground(Color.GREEN);
+		statusBarTF.setBackground(Color.GRAY);
+		keyTF.setBackground(Color.GRAY);
+		mouseTF.setBackground(Color.GRAY);
 
 		// create buttons
 
-		startB = new JButton ("Show Bat");
+		startB = new JButton ("Start Game");
 	        pauseB = new JButton ("Drop Alien");
 	        focusB = new JButton ("Focus on Key");
 		exitB = new JButton ("Exit");
@@ -87,8 +88,9 @@ public class GameWindow extends JFrame
 		// create the gamePanel for game entities
 
 		gamePanel = new GamePanel();
-        	gamePanel.setPreferredSize(new Dimension(400, 400));
+        	gamePanel.setPreferredSize(new Dimension(600, 500));
 		gamePanel.createGameEntities();
+		
 
 
 		// create infoPanel
@@ -96,7 +98,7 @@ public class GameWindow extends JFrame
 		JPanel infoPanel = new JPanel();
 		gridLayout = new GridLayout(3, 2);
 		infoPanel.setLayout(gridLayout);
-		infoPanel.setBackground(Color.ORANGE);
+		infoPanel.setBackground(Color.BLACK);
 
 		// add user interface objects to infoPanel
 	
@@ -128,7 +130,7 @@ public class GameWindow extends JFrame
 		mainPanel.add(infoPanel);
 		mainPanel.add(gamePanel);
 		mainPanel.add(buttonPanel);
-		mainPanel.setBackground(Color.PINK);
+		mainPanel.setBackground(Color.BLACK);
 
 		// set up mainPanel to respond to keyboard and mouse
 
@@ -150,6 +152,14 @@ public class GameWindow extends JFrame
 		// set status bar message
 
 		statusBarTF.setText("Application started.");
+		
+
+		obstacleTimer = new Timer(30,new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				gamePanel.moveObstacles();
+			}
+		});
 	}
 
 
@@ -165,10 +175,12 @@ public class GameWindow extends JFrame
 			mainPanel.requestFocus();
 
 		if (command.equals(startB.getText()))
+			gamePanel.createGameEntities(); 
 			gamePanel.drawGameEntities();
+			obstacleTimer.start();
 
 		if (command.equals(pauseB.getText()))
-			gamePanel.dropAlien();
+			gamePanel.dropObstacle();
 
 		if (command.equals(exitB.getText()))
 			System.exit(0);
@@ -176,22 +188,30 @@ public class GameWindow extends JFrame
 
 
 	// implement methods in KeyListener interface
-
 	public void keyPressed(KeyEvent e) {
 		int keyCode = e.getKeyCode();
 		String keyText = e.getKeyText(keyCode);
 		keyTF.setText(keyText + " pressed.");
-
+	
 		if (keyCode == KeyEvent.VK_RIGHT) {
 			gamePanel.updateGameEntities(2);
 			gamePanel.drawGameEntities();
-		}
-
-		if (keyCode == KeyEvent.VK_LEFT) {
+		} else if (keyCode == KeyEvent.VK_LEFT) {
 			gamePanel.updateGameEntities(1);
 			gamePanel.drawGameEntities();
+		} else if (keyCode == KeyEvent.VK_DOWN) {
+			gamePanel.updateGameEntities(3);
+			gamePanel.drawGameEntities();
+		} else if (keyCode == KeyEvent.VK_UP) {
+			gamePanel.updateGameEntities(4);
+			gamePanel.drawGameEntities();
+		} else if (keyCode == KeyEvent.VK_SPACE) {  // 🚀 Add this for shooting
+			System.out.println("Space pressed! Shooting bullet...");
+			gamePanel.shoot();  // Ensure this method exists in GamePanel
 		}
 	}
+	
+	
 
 	public void keyReleased(KeyEvent e) {
 
@@ -205,19 +225,19 @@ public class GameWindow extends JFrame
 
 	public void mouseClicked(MouseEvent e) {
 
-		int x = e.getX();
-		int y = e.getY();
+		// int x = e.getX();
+		// int y = e.getY();
 
-		if (gamePanel.isOnBat(x, y)) {
-			statusBarTF.setText ("Mouse click on bat!");
-			statusBarTF.setBackground(Color.RED);
-		}
-		else {
-			statusBarTF.setText ("");
-			statusBarTF.setBackground(Color.CYAN);
-		}
+		// if (gamePanel.isOnBat(x, y)) {
+		// 	statusBarTF.setText ("Mouse click on bat!");
+		// 	statusBarTF.setBackground(Color.RED);
+		// }
+		// else {
+		// 	statusBarTF.setText ("");
+		// 	statusBarTF.setBackground(Color.CYAN);
+		// }
 
-		mouseTF.setText("(" + x +", " + y + ")");
+		// mouseTF.setText("(" + x +", " + y + ")");
 
 	}
 
@@ -237,5 +257,7 @@ public class GameWindow extends JFrame
 	public void mouseReleased(MouseEvent e) {
 	
 	}
+
+
 
 }
