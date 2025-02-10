@@ -1,25 +1,50 @@
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.JPanel;
 import java.util.Random;
+import java.awt.geom.*;
 
 // Rectangle class
 public class Rectangle {
     private JPanel panel;
     private int x, y;
-    private int width = 40, height = 20;
+    private int width, height;
     private boolean alive = true;
-    private java.awt.Rectangle rectangle;
+    private Rectangle rectangle;
     private int speed = 5;
+    private int originalX;
+    private int originalY;
+    private int dx;
+    private int dy;
+    private Color backgroundColour;
+    private Dimension dimension;
+    private Random random;
+    private Bullet bullet;
 
-    public Rectangle(JPanel p, int xPos, int yPos) {
+    public Rectangle(JPanel p, int xPos, int yPos, Bullet bullet) {
         panel = p;
         x = xPos;
         y = yPos;
-        rectangle = new java.awt.Rectangle(x, y, width, height);
+        width = 30;
+        height = 20;
+        random = new Random();
+        
+        setLocation();
+
+       dx = 5;
+       dy = 5;
+
+       this.bullet = bullet;
     }
 
-    public void draw(Graphics g) {
+    public void setLocation(){
+        int panelWidth = panel.getWidth();
+        x = random.nextInt(panelWidth - width);
+        y = 10;
+    }
+
+    public void draw() {
         if (alive) {
             g.setColor(Color.GREEN);
             g.fillRect(x, y, width, height);
