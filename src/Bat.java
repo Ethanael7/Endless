@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JPanel;
 
@@ -12,35 +13,34 @@ public class Bat {
    private int y;
    private int width;
    private int height;
-
    private int dx;
    private int dy;
-
-   private Rectangle2D.Double bat;
-
    private Color backgroundColour;
    private Dimension dimension;
 
    public Bat(JPanel p, int xPos, int yPos) {
       panel = p;
       dimension = panel.getSize();
-
       backgroundColour = panel.getBackground();
+
       x = xPos;
       y = yPos;
-
       dx = 0;   
       dy = 20;  
 
-      width = 30;
-      height = 30;
+      width = 30;  
+      height = 30; 
    }
 
    public void draw() {
       Graphics g = panel.getGraphics();
       Graphics2D g2 = (Graphics2D) g;
 
-      bat = new Rectangle2D.Double(x, y, width, height);
+      int[] xPoints = {x + width, x, x};  
+      int[] yPoints = {y + height / 2, y, y + height};  
+
+      Polygon bat = new Polygon(xPoints, yPoints, 3);
+
       g2.setColor(Color.RED);
       g2.fill(bat);
 
@@ -52,7 +52,7 @@ public class Bat {
       Graphics2D g2 = (Graphics2D) g;
 
       g2.setColor(backgroundColour);
-      g2.fill(new Rectangle2D.Double(x, y, width, height));
+      g2.fillRect(x, y, width, height);
 
       g.dispose();
    }
@@ -74,12 +74,31 @@ public class Bat {
    }
 
    public boolean isOnBat(int x, int y) {
-      if (bat == null)
-         return false;
-
+      Polygon bat = new Polygon(
+         new int[]{this.x + width, this.x, this.x}, 
+         new int[]{this.y + height / 2, this.y, this.y + height}, 
+         3
+      );
       return bat.contains(x, y);
    }
 
+   public int getX() {
+      return x;
+   }
+
+   public int getY() {
+      return y;   
+   }
+
+   public int getWidth() {
+      return width;
+   }
+
+   public int getHeight() {   
+      return height;
+   }
+
+   
    public Rectangle2D.Double getBoundingRectangle() {
       return new Rectangle2D.Double(x, y, width, height);
    }
