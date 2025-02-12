@@ -1,156 +1,143 @@
-import java.awt.*;			// need this for GUI objects
-import java.awt.event.*;			// need this for Layout Managers
-import javax.swing.*;		// need this to respond to GUI events
-	
+import java.awt.*;
+import java.awt.event.*;			
+import javax.swing.*;		
+
 public class GameWindow extends JFrame 
 				implements ActionListener,
 					   KeyListener,
 					   MouseListener
 {
-	// declare instance variables for user interface objects
 
-	// declare labels 
+	private Timer timer;
+	// Labels
+	private JLabel statusBarL, keyL, mouseL, scoreL,livesL;
+	// Text Fields
+	private JTextField statusBarTF, keyTF, mouseTF, scoreTF;
 
-	private JLabel statusBarL;
-	private JLabel keyL;
-	private JLabel mouseL;
-
-	// declare text fields
-
-	private JTextField statusBarTF;
-	private JTextField keyTF;
-	private JTextField mouseTF;
-
-	// declare buttons
-
-	private JButton startB;
-	private JButton pauseB;
-	private JButton focusB;
-	private JButton exitB;
+	// Buttons
+	private JButton startB, pauseB, focusB, exitB;
 
 	private Container c;
-
 	private JPanel mainPanel;
 	private GamePanel gamePanel;
 
-	@SuppressWarnings({"unchecked"})
 	public GameWindow() {
- 
-		setTitle ("A Game with a Bat and an Alien");
-		setSize (500, 550);
+		setTitle("Shape Invaders");
+		setSize(600, 650);
 
-		// create user interface objects
-
-		// create labels
-
-		statusBarL = new JLabel ("Application Status: ");
+		statusBarL = new JLabel("Application Status: ");
 		keyL = new JLabel("Key Pressed: ");
-		mouseL = new JLabel("Location of Mouse Click: ");
+		mouseL = new JLabel("Mouse Click Location: ");
+		scoreL = new JLabel("Score: 0");
+		livesL = new JLabel("Lives: 3");  
 
-		// create text fields and set their colour, etc.
+		statusBarL.setForeground(Color.WHITE);
+		keyL.setForeground(Color.WHITE);
+		mouseL.setForeground(Color.WHITE);
+		scoreL.setForeground(Color.WHITE);
 
-		statusBarTF = new JTextField (25);
-		keyTF = new JTextField (25);
-		mouseTF = new JTextField (25);
+		// Create text fields (dark background, white text)
+		statusBarTF = new JTextField(25);
+		keyTF = new JTextField(25);
+		mouseTF = new JTextField(25);
+		scoreTF = new JTextField(10);
 
 		statusBarTF.setEditable(false);
 		keyTF.setEditable(false);
 		mouseTF.setEditable(false);
+		scoreTF.setEditable(false); 
 
-		statusBarTF.setBackground(Color.CYAN);
-		keyTF.setBackground(Color.YELLOW);
-		mouseTF.setBackground(Color.GREEN);
+		statusBarTF.setBackground(Color.DARK_GRAY);
+		keyTF.setBackground(Color.DARK_GRAY);
+		mouseTF.setBackground(Color.DARK_GRAY);
+		scoreTF.setBackground(Color.DARK_GRAY);
 
-		// create buttons
+		statusBarTF.setForeground(Color.WHITE);
+		keyTF.setForeground(Color.WHITE);
+		mouseTF.setForeground(Color.WHITE);
+		scoreTF.setForeground(Color.WHITE);
 
-		startB = new JButton ("Show Bat");
-	        pauseB = new JButton ("Drop Alien");
-	        focusB = new JButton ("Focus on Key");
-		exitB = new JButton ("Exit");
+		// Create buttons 
+		startB = new JButton("Show Bat");
+		// pauseB = new JButton("Drop Alien");
+		// focusB = new JButton("Focus on Key");
+		exitB = new JButton("Exit");
 
-		// add listener to each button (same as the current object)
 
+		// Add button listeners
 		startB.addActionListener(this);
-		pauseB.addActionListener(this);
-		focusB.addActionListener(this);
+		// pauseB.addActionListener(this);
+		// focusB.addActionListener(this);
 		exitB.addActionListener(this);
 
-		
-		// create mainPanel
-
+		// Create main panel (black background)
 		mainPanel = new JPanel();
 		FlowLayout flowLayout = new FlowLayout();
 		mainPanel.setLayout(flowLayout);
 
-		GridLayout gridLayout;
-
-		// create the gamePanel for game entities
-
+		// Create game panel (black background)
 		gamePanel = new GamePanel();
-        	gamePanel.setPreferredSize(new Dimension(400, 400));
+		gamePanel.setPreferredSize(new Dimension(450, 450));
 		gamePanel.createGameEntities();
-
-
-		// create infoPanel
-
-		JPanel infoPanel = new JPanel();
-		gridLayout = new GridLayout(3, 2);
-		infoPanel.setLayout(gridLayout);
-		infoPanel.setBackground(Color.ORANGE);
-
-		// add user interface objects to infoPanel
 	
-		infoPanel.add (statusBarL);
-		infoPanel.add (statusBarTF);
 
-		infoPanel.add (keyL);
-		infoPanel.add (keyTF);		
+		// Info panel (grid layout, black background)
+		JPanel infoPanel = new JPanel(new GridLayout(4, 2));
+		infoPanel.setBackground(Color.BLACK); 
+		infoPanel.add(statusBarL);
+		infoPanel.add(statusBarTF);
+		infoPanel.add(keyL);
+		infoPanel.add(keyTF);
+		infoPanel.add(mouseL);
+		infoPanel.add(mouseTF);
+		infoPanel.add(scoreL);
+		infoPanel.add(scoreTF);
 
-		infoPanel.add (mouseL);
-		infoPanel.add (mouseTF);
+		// Button panel (black background)
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 4));
+		buttonPanel.setBackground(Color.BLACK);
+		buttonPanel.add(startB);
+		// buttonPanel.add(pauseB);
+		// buttonPanel.add(focusB);
+		buttonPanel.add(exitB);
 
-		
-		// create buttonPanel
-
-		JPanel buttonPanel = new JPanel();
-		gridLayout = new GridLayout(1, 4);
-		buttonPanel.setLayout(gridLayout);
-
-		// add buttons to buttonPanel
-
-		buttonPanel.add (startB);
-		buttonPanel.add (pauseB);
-		buttonPanel.add (focusB);
-		buttonPanel.add (exitB);
-
-		// add sub-panels with GUI objects to mainPanel and set its colour
-
+		// Add sub-panels to main panel
 		mainPanel.add(infoPanel);
 		mainPanel.add(gamePanel);
 		mainPanel.add(buttonPanel);
-		mainPanel.setBackground(Color.PINK);
 
-		// set up mainPanel to respond to keyboard and mouse
-
+		// Set up mainPanel to listen for key/mouse events
 		gamePanel.addMouseListener(this);
 		mainPanel.addKeyListener(this);
 
-		// add mainPanel to window surface
-
+		// Add mainPanel to window
 		c = getContentPane();
 		c.add(mainPanel);
 
-		// set properties of window
-
+		// Window settings
 		setResizable(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 		setVisible(true);
 
-		// set status bar message
+		// Initial status message
+		statusBarTF.setText("Game started.");
+	
+	
 
-		statusBarTF.setText("Application started.");
-	}
+	// Method to update score from GamePanel
+	timer = new Timer(50, e -> {
+		gamePanel.updateBullets();
+		gamePanel.checkCollisions();
+		scoreL.setText("Score: " + gamePanel.getScore());
+		livesL.setText("Lives: " + gamePanel.getLives());
+	
+		if (gamePanel.getLives() <= 0) {
+			startB.setEnabled(true);
+		}
+	});
+	
+	timer.start();
+}
 
 
 	// implement single method in ActionListener interface
@@ -161,23 +148,18 @@ public class GameWindow extends JFrame
 		
 		statusBarTF.setText(command + " button clicked.");
 
-		if (command.equals(focusB.getText()))
-			mainPanel.requestFocus();
 
-		if (command.equals(startB.getText()))
+		if (command.equals(startB.getText())){
 			gamePanel.drawGameEntities();
+			gamePanel.dropShapes();
+		}
 
-		if (command.equals(pauseB.getText()))
-			gamePanel.dropAlien();
-
-		if (command.equals(exitB.getText()))
+		if (command.equals(exitB.getText())){
 			System.exit(0);
+		}
 
 		mainPanel.requestFocus();
 	}
-
-
-	// implement methods in KeyListener interface
 
 	public void keyPressed(KeyEvent e) {
 		int keyCode = e.getKeyCode();
@@ -191,6 +173,11 @@ public class GameWindow extends JFrame
 
 		if (keyCode == KeyEvent.VK_UP) {
 			gamePanel.updateGameEntities(1);
+			gamePanel.drawGameEntities();
+		}
+
+		if(keyCode == KeyEvent.VK_SPACE) {
+			gamePanel.shootBullet();
 			gamePanel.drawGameEntities();
 		}
 	}
