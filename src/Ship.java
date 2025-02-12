@@ -2,6 +2,7 @@ import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.*;
 import java.awt.Polygon;
 import javax.swing.JPanel;
 import java.util.*;
@@ -85,6 +86,11 @@ public class Ship {
             y = Math.max(y - dy, 0);
         }
     }
+
+    
+   public Rectangle2D.Double getBoundingRectangle() {
+    return new Rectangle2D.Double (x, y, size, size);
+ }
 
     public void setPosition(int x, int y) {
         this.x = x;

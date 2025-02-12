@@ -1,20 +1,21 @@
-import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import java.awt.Graphics;
 
 public class GamePanel extends JPanel {
     private Ship ship;
     private ArrayList<Rectangle> obstacles;
     private ArrayList<Bullet> bullets;
     private ArrayList<Triangle> triangles;
+    private Timer obstacleTimer;
     private Timer bulletTimer;
     private int score = 0;
     private int lives = 3;
     private boolean gameOver = false;
     private int level = 1;
-    private final int baseObstacles = 10;
+    private final int baseObstacles = 4;
 
     public GamePanel() {
         obstacles = new ArrayList<>();
@@ -43,13 +44,26 @@ public class GamePanel extends JPanel {
         }
 
         dropTriangle();
+        startTimers();
         drawGameEntities();
     }
 
+    private void startTimers() {
+        if (obstacleTimer != null && obstacleTimer.isRunning()) {
+            obstacleTimer.stop();
+        }
+        obstacleTimer = new Timer(30, e -> updateGame());
+        obstacleTimer.start();
+
+        if (bulletTimer == null) {
+            bulletTimer = new Timer(50, e -> updateBullets());
+            bulletTimer.start();
+        }
+    }
 
     public void updateGame() {
-   
-        Graphics g = getGraphics();  
+        // Handle obstacles (rectangles)
+        Graphics g = getGraphics();  // Moved this here to avoid unnecessary graphics initialization in loops
         if (g == null) return;
 
         for (Rectangle obstacle : obstacles) {
@@ -58,11 +72,12 @@ public class GamePanel extends JPanel {
             obstacle.draw(g);
 
             if (obstacle.checkCollision(ship.getX(), ship.getY(), ship.getSize(), ship.getSize())) {
-                loseLife(1);  
-                obstacles.remove(obstacle);  
+                loseLife(1);  // Lose life if the obstacle hits the ship
+                obstacles.remove(obstacle);  // Remove the obstacle after collision
             }
         }
 
+        // Handle triangles
         for (Triangle triangle : triangles) {
             triangle.erase(g);
             triangle.move();
@@ -74,6 +89,8 @@ public class GamePanel extends JPanel {
                 ship = null;  
             }
         }
+
+        // Check if all obstacles are cleared
         if (obstacles.isEmpty()) {
             nextLevel();  
         }
@@ -181,11 +198,12 @@ public class GamePanel extends JPanel {
     public void gameOver() {
         gameOver = true;
         System.out.println("Game Over! Click Start Game to restart.");
+        if (obstacleTimer != null) obstacleTimer.stop();
         if (bulletTimer != null) bulletTimer.stop();
     }
 
     public void nextLevel() {
-
+        if (obstacleTimer != null) obstacleTimer.stop();
         level++;
         System.out.println("Level " + level + " starting!");
        
@@ -204,18 +222,11 @@ public class GamePanel extends JPanel {
      
         triangles.clear();
         dropTriangle();
+        if (obstacleTimer != null) obstacleTimer.start();
     }
 
     public int getScore() {
         return score;
     }
 }
-
-
-
-
-
-
-
-
 
