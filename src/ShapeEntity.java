@@ -10,18 +10,21 @@ public class ShapeEntity extends Thread {
    private Color backgroundColour, shapeColor;
    private Dimension dimension;
    private boolean isRunning;
+   private boolean alive = true;
    private Random random;
-   private String shapeType; // "circle" or "rectangle"
-   private Bat bat;
+   private String shapeType; 
+   private Ship ship;
+   private int startX, startY;
 
-   public ShapeEntity(JPanel p, int xPos, int yPos, int width, int height, String shapeType, Color shapeColor, Bat bat) {
+   public ShapeEntity(JPanel p, int xPos, int yPos, int width, int height, String shapeType, Color shapeColor, Ship bat) {
       panel = p;
       dimension = panel.getSize();
       backgroundColour = panel.getBackground();
       this.shapeColor = shapeColor;
       this.shapeType = shapeType;
-      this.bat = bat;
-
+      this.ship = bat;
+      this.startX = xPos;
+      this.startY = yPos;
       x = xPos;
       y = yPos;
       this.width = width;
@@ -38,6 +41,7 @@ public class ShapeEntity extends Thread {
    }
 
    public void draw() {
+      if(!alive) return;
       Graphics g = panel.getGraphics();
       Graphics2D g2 = (Graphics2D) g;
       g2.setColor(shapeColor);
@@ -60,10 +64,7 @@ public class ShapeEntity extends Thread {
       Graphics g = panel.getGraphics();
       Graphics2D g2 = (Graphics2D) g;
       g2.setColor(backgroundColour);
-   
-      int padding = 2; 
-      g2.fill(new Rectangle2D.Double(x - padding, y - padding, width + 2 * padding, height + 2 * padding));
-  
+      g2.fill(new Rectangle2D.Double(x - 2, y - 2, width + 4, height + 4));
       g.dispose();
   }
   
@@ -85,15 +86,46 @@ public class ShapeEntity extends Thread {
             erase();
             move();
             draw();
-            checkCollision();
             sleep(50);
          }
       } catch (InterruptedException e) {}
    }
 
+   public boolean checkCollision(Bullet bullet){
+      return alive && bullet.getBoundingRectangle().intersects(getBoundingRectangle());
+   }
+
+   public void destroy() {
+      if (!alive) return; 
+  
+      Graphics g = panel.getGraphics();
+      if (g != null) {
+          erase(); 
+          g.dispose();
+      }
+  
+      alive = false;
+      respawn(); 
+  }
+  
+
+   public void respawn() {
+      alive = true;
+      x = startX;  
+      y = startY;
+      draw();
+  }
+
+
+
+
+   public boolean isAlives(){
+      return alive;
+   }
+
    public boolean collidesWithBat() {
       Rectangle2D.Double shapeBounds = new Rectangle2D.Double(x, y, width, height);
-      return shapeBounds.intersects(bat.getBoundingRectangle());
+      return shapeBounds.intersects(ship.getBoundingRectangle());
    }
 
    public boolean hasReachedEnd() {

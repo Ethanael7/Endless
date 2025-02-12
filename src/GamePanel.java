@@ -3,70 +3,94 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 public class GamePanel extends JPanel {
-    private Bat bat;
+    private Ship ship;
+    private JPanel p;
     private ArrayList<ShapeEntity> shapes;
     private ArrayList<Bullet> bullets;
     private int lives = 3;
     private boolean gameOver = false;
     private int score = 0;
+    private long last = 0;
+    private static final int delay = 200;
 
     public GamePanel() {
+
         shapes = new ArrayList<>();
         bullets = new ArrayList<>();
+        setBackground(new Color(15,15,40));
     }
 
     public void createGameEntities() {
-        this.bat = new Bat(this, 50, 350);
-        shapes.add(new ShapeEntity(this, 200, 10, 30, 30, "circle", Color.YELLOW, bat));
-        shapes.add(new ShapeEntity(this, 300, 50, 40, 40, "rectangle", Color.RED, bat));
-        shapes.add(new ShapeEntity(this, 400, 20, 35, 35, "circle", Color.BLUE, bat));
-        shapes.add(new ShapeEntity(this, 500, 60, 45, 45, "rectangle", Color.GREEN, bat));
+        this.ship = new Ship(this, 50, 350);
+        shapes.add(new ShapeEntity(this, 200, 10, 30, 30, "circle", Color.YELLOW, ship));
+        shapes.add(new ShapeEntity(this, 300, 50, 40, 40, "rectangle", Color.RED, ship));
+        shapes.add(new ShapeEntity(this, 400, 20, 35, 35, "circle", Color.BLUE, ship));
+        shapes.add(new ShapeEntity(this, 500, 60, 45, 45, "rectangle", Color.GREEN, ship));
     }
 
     public void drawGameEntities() {
-        if (bat != null) {
-            bat.draw();
+        if (ship != null) {
+            ship.draw();
         }
         for (ShapeEntity shape : shapes) {
             shape.draw();
         }
-        for(Bullet bullet : bullets) {
-            bullet.draw();
+     
     }
-}
+
 
     public void updateGameEntities(int direction) {
-        if(!gameOver){
-            
-        if (bat != null) {
-            bat.erase();
-            bat.move(direction);
+        if(!gameOver && ship != null){
+            ship.erase();
+            ship.move(direction);
+            }
         }
-    }
-}
+    
 
     public void shootBullet() {
-        if(!gameOver){
-            bullets.add(new Bullet(this, bat.getX() + bat.getWidth() / 2, bat.getY()));
+        if (ship == null || System.currentTimeMillis() - last < delay) return;  
+        last = System.currentTimeMillis();
+        Bullet bullet = new Bullet(this, ship.getX() + ship.getSize() / 2, ship.getY(), 5, 10);
+        bullets.add(bullet);
+    }
+   
+
+    public void updateBullets() {
+        if (gameOver) return; 
+        
+        Graphics g = getGraphics();
+        if (g == null) return;
+
+        for (int i = 0; i < bullets.size(); i++) {
+            Bullet bullet = bullets.get(i);
+            bullet.erase(g);  
+            bullet.move();
+            bullet.draw();  
+
+            if (!bullet.isActive()) {
+                bullets.remove(i);
+                i--;
+                continue;
+            }
+
+            for (int j = 0; j < shapes.size(); j++) {
+                ShapeEntity shape = shapes.get(j);
+                if (shape.isAlive() && shape.checkCollision(bullet)) {
+                    score += 100;
+                    shape.destroy();
+                    bullets.remove(i);
+                    i--;
+                    break;
+                }
+            }
         }
     }
 
-    public void updateBullets() {
-        bullets.removeIf(bullet -> {
-            bullet.move();
-            for (ShapeEntity shape : shapes) {
-                if (bullet.collidesWith(shape)) {
-                    score += 100;
-                    shapes.remove(shape);
-                    return true;
-                }
-            }
-            return bullet.isOutOfBounds();
-        });
-    }
+       
 
 
     public void dropShapes() {
+        if(gameOver) return;
         for (ShapeEntity shape : shapes) {
             shape.start();
         }
@@ -77,28 +101,21 @@ public class GamePanel extends JPanel {
     }
 
     public void checkCollisions() {
-        for (Bullet bullet : getBullets()) {
-            for (ShapeEntity shape : shapes) {
-                if (shape.getBoundingRectangle().intersects(bullet.getBoundingRectangle())) {
-                    score += 100;
-                    bullet.erase();
-                    shapes.remove(shape);
+        if (gameOver) return;
+
+        for (ShapeEntity shape : shapes) {
+            if (shape.isAlive() && shape.collidesWithBat()) {
+                lives--;
+
+                if (lives <= 0) {
+                    gameOver = true;
+                    lives = 0; 
+        
                     return;
                 }
             }
         }
-
-        for (ShapeEntity shape : shapes) {
-            if (shape.collidesWithBat()) {
-                lives--;
-                if (lives <= 0) {
-                    gameOver = true;
-                }
-            }
-        }
     }
-
-
     public int getScore(){
       return score;
     }
@@ -113,10 +130,11 @@ public class GamePanel extends JPanel {
         gameOver = false;
         shapes.clear();
         createGameEntities();
+        dropShapes();
     }
 
     public boolean isOnBat(int x, int y) {
-        return bat != null && bat.isOnBat(x, y);
+        return ship != null && ship.isOnBat(x, y);
     }
 }
 

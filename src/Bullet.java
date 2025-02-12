@@ -18,10 +18,13 @@ public class Bullet {
     private boolean active = true;
 
 
-    public Bullet(JPanel p, int x, int y) {
-        this.panel = p;
+
+    public Bullet(JPanel panel,int x, int y,int width,int height) {
+        this.panel = panel;
         this.x = x;
         this.y = y;
+        this.width = width;
+        this.height = height;
         dimension = panel.getSize();
         backgroundColour = panel.getBackground();
 }
@@ -33,8 +36,8 @@ public class Bullet {
         }
     }
 
-    public void erase() {
-        Graphics g = panel.getGraphics();
+ 
+    public void erase(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
   
         g2.setColor(backgroundColour);
@@ -50,7 +53,7 @@ public class Bullet {
 
     public void draw(){
         Graphics g = panel.getGraphics();
-        g.setColor(Color.BLACK);
+        g.setColor(Color.WHITE);
         g.fillRect(x, y, width, height);
         g.dispose();
 }
@@ -65,6 +68,10 @@ public class Bullet {
 
     public int getY(){
         return y;
+    }
+
+    public boolean isActive(){
+        return active;
     }
 
     public boolean collidesWith(ShapeEntity shape) {

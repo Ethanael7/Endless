@@ -6,7 +6,7 @@ import java.awt.Polygon;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JPanel;
 
-public class Bat {
+public class Ship {
 
    private JPanel panel;
    private int x;
@@ -18,7 +18,7 @@ public class Bat {
    private Color backgroundColour;
    private Dimension dimension;
 
-   public Bat(JPanel p, int xPos, int yPos) {
+   public Ship(JPanel p, int xPos, int yPos) {
       panel = p;
       dimension = panel.getSize();
       backgroundColour = panel.getBackground();
@@ -45,6 +45,10 @@ public class Bat {
       g2.fill(bat);
 
       g.dispose();
+   }
+
+   public int getSize(){
+      return width+height;
    }
 
    public void erase() {
