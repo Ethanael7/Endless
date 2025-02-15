@@ -10,6 +10,7 @@ public class GamePanel extends JPanel {
     private JPanel p;
     private ArrayList<ShapeEntity> shapes;
     private ArrayList<Bullet> bullets;
+    private ShapeEntity shape;
     private int lives = 3;
     private boolean gameOver = false;
     private int score = 0;
@@ -30,7 +31,8 @@ public class GamePanel extends JPanel {
             }
             if (lives <= 0) {
                 gameOver = true;
-                stopTimer();
+                stopGame();
+
             }
         });
         timer.start();  
@@ -44,22 +46,23 @@ public class GamePanel extends JPanel {
     }
 
     public void spawnRandomShapes(int numShapes) {
+ 
+        int shapeWidth = 40;  
+        int shapeHeight = 40; 
+    
         for (int i = 0; i < numShapes; i++) {
-        
+       
             String shapeType = random.nextInt(3) == 0 ? "circle" : (random.nextInt(2) == 0 ? "rectangle" : "triangle");
     
-        
             int x = random.nextInt(800);  
-            int y = random.nextInt(600); 
-            int width = random.nextInt(40) + 30;  
-            int height = random.nextInt(40) + 30;  
+            int y = random.nextInt(600);
     
-  
             Color color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));  // Random color
-
-            shapes.add(new ShapeEntity(this, x, y, width, height, shapeType, color, ship));
+    
+            shapes.add(new ShapeEntity(this, x, y, shapeWidth, shapeHeight, shapeType, color, ship));
         }
     }
+    
     
 
     public void drawGameEntities() {
@@ -115,6 +118,18 @@ public class GamePanel extends JPanel {
         }
     }
 
+    public void stopGame() {
+        stopTimer();  
+        stopShapes();  
+    }
+
+    public void stopShapes() {
+        for (ShapeEntity shape : shapes) {
+            shape.stopRun();  
+        }
+    }
+
+
     public void dropShapes() {
         if (gameOver) return;
         for (ShapeEntity shape : shapes) {
@@ -160,6 +175,7 @@ public class GamePanel extends JPanel {
     }
 
     public void resetGame() {
+        clearScreen(); 
         lives = 3;
         score = 0;
         gameOver = false;
@@ -173,6 +189,24 @@ public class GamePanel extends JPanel {
         createGameEntities();
         dropShapes();
         startTimer();
+    }
+
+    public void clearScreen() {
+ 
+        for (Bullet bullet : bullets) {
+            bullet.erase(getGraphics());
+        }
+        bullets.clear();  
+    
+        for (ShapeEntity shape : shapes) {
+            shape.erase();
+        }
+        shapes.clear();  
+     
+
+        if (ship != null) {
+            ship.erase();
+        }
     }
 
     public boolean isOnBat(int x, int y) {

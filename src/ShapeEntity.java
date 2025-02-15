@@ -42,6 +42,8 @@ public class ShapeEntity extends Thread {
 
    public void draw() {
       if(!alive) return;
+
+      // Drawing the shape onto the screen
       Graphics g = panel.getGraphics();
       Graphics2D g2 = (Graphics2D) g;
       g2.setColor(shapeColor);
@@ -57,23 +59,31 @@ public class ShapeEntity extends Thread {
          g2.setColor(Color.BLACK);
          g2.draw(rect);
       } else if (shapeType.equalsIgnoreCase("triangle")) {
-
          int[] xPoints = { x, x - width / 2, x + width / 2 };  
          int[] yPoints = { y, y + height, y + height };  
          g2.fillPolygon(xPoints, yPoints, 3);  
          g2.setColor(Color.BLACK);
          g2.drawPolygon(xPoints, yPoints, 3);  
       }
+
       g.dispose();
    }
    public void erase() {
       Graphics g = panel.getGraphics();
       Graphics2D g2 = (Graphics2D) g;
       g2.setColor(backgroundColour);
-      g2.fill(new Rectangle2D.Double(x - 2, y - 2, width + 4, height + 4));
+   
+    
+      if (shapeType.equals("triangle")) {
+        
+         g2.fill(new Rectangle2D.Double(x - width / 2 - 5, y - 5, width + 10, height + 10));  
+      } else {
+         g2.fill(new Rectangle2D.Double(x - 5, y - 5, width + 10, height + 10));  
+      }
+   
       g.dispose();
-  }
-  
+   }
+   
    public void move() {
       if (!panel.isVisible()) return;
 
@@ -95,6 +105,11 @@ public class ShapeEntity extends Thread {
             sleep(50);
          }
       } catch (InterruptedException e) {}
+   }
+
+   public void stopRun() {
+      isRunning = false;  
+      this.interrupt();   
    }
 
    public boolean checkCollision(Bullet bullet){
