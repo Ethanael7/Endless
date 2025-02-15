@@ -119,24 +119,27 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener, M
     }
 
     // Key event handling
-    @Override
     public void keyPressed(KeyEvent e) {
-        int keyCode = e.getKeyCode();
-        keyTF.setText(KeyEvent.getKeyText(keyCode) + " pressed.");
+		int keyCode = e.getKeyCode();
+		String keyText = e.getKeyText(keyCode);
+		keyTF.setText(keyText + " pressed.");
 
-        switch (keyCode) {
-            case KeyEvent.VK_DOWN:
-                gamePanel.updateGameEntities(2);
-                break;
-            case KeyEvent.VK_UP:
-                gamePanel.updateGameEntities(1);
-                break;
-            case KeyEvent.VK_SPACE:
-                gamePanel.shootBullet();
-                break;
+		if (keyCode == KeyEvent.VK_DOWN) {
+			gamePanel.updateGameEntities(2);
+			gamePanel.drawGameEntities();
+		}
+
+		if (keyCode == KeyEvent.VK_UP) {
+			gamePanel.updateGameEntities(1);
+			gamePanel.drawGameEntities();
+		}
+
+        if(keyCode == KeyEvent.VK_SPACE){
+            gamePanel.shootBullet();
+           
         }
-        gamePanel.drawGameEntities();
-    }
+	}
+
 
     @Override
     public void keyReleased(KeyEvent e) {}

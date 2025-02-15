@@ -21,24 +21,24 @@ public class Bullet {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.backgroundColour = panel.getBackground(); // For erasing bullet
+        this.backgroundColour = panel.getBackground(); 
     }
 
     public void move() {
-        x += speed; // Bullet moves horizontally
-        if (x > panel.getWidth()) { // If the bullet moves off-screen
+        x += speed; 
+        if (x > panel.getWidth()) { 
             active = false;
         }
     }
 
     public void erase(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(backgroundColour); // Use background color to erase
+        g2.setColor(backgroundColour); 
         g2.fillRect(x, y, width, height);
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.WHITE); // Draw the bullet in white
+        g.setColor(Color.WHITE);
         g.fillRect(x, y, width, height);
     }
 

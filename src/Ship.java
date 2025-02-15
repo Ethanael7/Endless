@@ -66,11 +66,11 @@ public class Ship {
 
       dimension = panel.getSize();
 
-      if (direction == 1) { // move up
+      if (direction == 1) { 
          y = y - dy;
          if (y < 0)
             y = 0;
-      } else if (direction == 2) { // move down
+      } else if (direction == 2) { 
          y = y + dy;
          if (y + height > dimension.height)
             y = dimension.height - height;
