@@ -85,19 +85,6 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener, M
         getContentPane().add(mainPanel);
         setVisible(true);
 
-   
-        timer = new Timer(50, e -> {
-            gamePanel.updateBullets();
-            gamePanel.checkCollisions();
-            updateScore();
-            updateLife();
-            if (gamePanel.getLives() <= 0) {
-                startB.setEnabled(true);
-            }
-        });
-        timer.start();
-
-    
         statusBarTF.setText("Game started.");
     }
 
@@ -157,7 +144,7 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener, M
     @Override
     public void keyTyped(KeyEvent e) {}
 
-    // Mouse event handling
+
     @Override
     public void mouseClicked(MouseEvent e) {
         int x = e.getX(), y = e.getY();

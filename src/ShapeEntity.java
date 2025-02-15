@@ -16,13 +16,13 @@ public class ShapeEntity extends Thread {
    private Ship ship;
    private int startX, startY;
 
-   public ShapeEntity(JPanel p, int xPos, int yPos, int width, int height, String shapeType, Color shapeColor, Ship bat) {
+   public ShapeEntity(JPanel p, int xPos, int yPos, int width, int height, String shapeType, Color shapeColor, Ship ship) {
       panel = p;
       dimension = panel.getSize();
       backgroundColour = panel.getBackground();
       this.shapeColor = shapeColor;
       this.shapeType = shapeType;
-      this.ship = bat;
+      this.ship = ship;
       this.startX = xPos;
       this.startY = yPos;
       x = xPos;
@@ -56,10 +56,16 @@ public class ShapeEntity extends Thread {
          g2.fill(rect);
          g2.setColor(Color.BLACK);
          g2.draw(rect);
+      } else if (shapeType.equalsIgnoreCase("triangle")) {
+
+         int[] xPoints = { x, x - width / 2, x + width / 2 };  
+         int[] yPoints = { y, y + height, y + height };  
+         g2.fillPolygon(xPoints, yPoints, 3);  
+         g2.setColor(Color.BLACK);
+         g2.drawPolygon(xPoints, yPoints, 3);  
       }
       g.dispose();
    }
-
    public void erase() {
       Graphics g = panel.getGraphics();
       Graphics2D g2 = (Graphics2D) g;
